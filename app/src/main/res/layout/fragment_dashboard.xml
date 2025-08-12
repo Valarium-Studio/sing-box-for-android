@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,12 +13,54 @@
         android:layout_height="match_parent"
         android:saveEnabled="false" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+    <!-- Вертикальный контейнер: FAB + progress поверх него + подпись снизу -->
+    <LinearLayout
+        android:id="@+id/fabContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        app:srcCompat="@drawable/ic_play_arrow_24" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="28dp"
+        app:layout_anchor="@id/dashboardPager"
+        app:layout_anchorGravity="bottom|center_horizontal">
+
+        <!-- Стек для FAB и индикатора -->
+        <FrameLayout
+            android:id="@+id/fabStack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fabCustomSize="200dp"
+                app:maxImageSize="100dp"
+                app:srcCompat="@drawable/ic_play_arrow_24" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress"
+                style="@style/Widget.Material3.CircularProgressIndicator"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:visibility="gone"
+                android:clickable="false"
+                android:focusable="false"
+                app:indicatorSize="48dp"
+                app:trackThickness="6dp" />
+        </FrameLayout>
+
+        <!-- Подпись ровно под кнопкой -->
+        <TextView
+            android:id="@+id/fabLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/label_connect"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"/>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

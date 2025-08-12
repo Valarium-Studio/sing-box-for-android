@@ -1,0 +1,6 @@
+<resources>
+    <style name="ShapeOverlay_Fab_Radius32">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">300dp</item>
+    </style>
+</resources>

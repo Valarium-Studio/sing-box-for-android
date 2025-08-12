@@ -7,6 +7,10 @@
     <string name="title_log">日志</string>
     <string name="title_settings">设置</string>
     <string name="title_new_profile">新建配置</string>
+    <string name="label_connect">No, thanks</string>
+    <string name="label_connecting">Подключение…</string>
+    <string name="label_disconnect">Отключить</string>
+    <string name="label_disconnecting">Отключение…</string>
     <string name="title_edit_profile">编辑配置</string>
     <string name="title_edit_configuration">编辑配置</string>
     <string name="title_overview">概述</string>

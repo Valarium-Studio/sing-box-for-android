@@ -5,6 +5,7 @@
 
     <style name="AppTheme.Base" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="bottomSheetDialogTheme">@style/BottomSheetDialogTheme</item>
+        <item name="floatingActionButtonStyle">@style/MyFabStyle</item>
     </style>
 
     <style name="AppTheme.Translucent" parent="Theme.Material3.DayNight.Dialog.Alert">

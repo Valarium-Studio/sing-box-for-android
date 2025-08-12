@@ -48,12 +48,14 @@ android {
             if (getProps("KEYSTORE_PASS") != "") {
                 signingConfig signingConfigs.release
             }
+            buildConfigField "boolean", "SUPPRESS_DEPRECATED_WARNINGS", "false"
         }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release
             vcsInfo.include false
+            buildConfigField "boolean", "SUPPRESS_DEPRECATED_WARNINGS", "true"
         }
     }
 

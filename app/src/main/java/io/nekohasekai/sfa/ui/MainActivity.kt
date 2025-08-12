@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.net.VpnService
 import android.os.Build
 import android.os.Bundle
@@ -70,6 +71,10 @@ class MainActivity : AbstractActivity<ActivityMainBinding>(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        lifecycleScope.launch {
+            seedAndAutoConnect()
+        }
+
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_my) as NavHostFragment
         navController = navHostFragment.navController
@@ -79,9 +84,9 @@ class MainActivity : AbstractActivity<ActivityMainBinding>(),
             AppBarConfiguration(
                 setOf(
                     R.id.navigation_dashboard,
-                    R.id.navigation_log,
-                    R.id.navigation_configuration,
-                    R.id.navigation_settings,
+                    //R.id.navigation_log,
+                    //R.id.navigation_configuration,
+                    //R.id.navigation_settings,
                 )
             )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -172,20 +177,19 @@ class MainActivity : AbstractActivity<ActivityMainBinding>(),
         }
     }
 
-    private suspend fun importProfile(content: ProfileContent) {
+    private suspend fun importProfile(content: ProfileContent): Long {
         val typedProfile = TypedProfile()
         val profile = Profile(name = content.name, typed = typedProfile)
         profile.userOrder = ProfileManager.nextOrder()
+
         when (content.type) {
             Libbox.ProfileTypeLocal -> {
                 typedProfile.type = TypedProfile.Type.Local
             }
-
             Libbox.ProfileTypeiCloud -> {
                 errorDialogBuilder(R.string.icloud_profile_unsupported).show()
-                return
+                return -1L
             }
-
             Libbox.ProfileTypeRemote -> {
                 typedProfile.type = TypedProfile.Type.Remote
                 typedProfile.remoteURL = content.remotePath
@@ -193,13 +197,23 @@ class MainActivity : AbstractActivity<ActivityMainBinding>(),
                 typedProfile.autoUpdateInterval = content.autoUpdateInterval
                 typedProfile.lastUpdated = Date(content.lastUpdated)
             }
+            else -> { /* no-op */ }
         }
+
         val configDirectory = File(filesDir, "configs").also { it.mkdirs() }
         val configFile = File(configDirectory, "${profile.userOrder}.json")
         configFile.writeText(content.config)
         typedProfile.path = configFile.path
+
+        // Сохраняем профиль в БД
         ProfileManager.create(profile)
+
+        // Делаем импортированный профиль активным
+        try { Settings.selectedProfile = profile.id } catch (_: Throwable) { /* ignore */ }
+
+        return profile.id
     }
+
 
     fun reconnect() {
         connection.reconnect()
@@ -431,5 +445,48 @@ class MainActivity : AbstractActivity<ActivityMainBinding>(),
         connection.disconnect()
         super.onDestroy()
     }
+
+    private suspend fun seedAndAutoConnect() {
+        // 1) Узнаём, есть ли уже профили в БД
+        val profiles = withContext(Dispatchers.IO) { ProfileManager.list() }
+
+        if (profiles.isEmpty()) {
+            // 2) Импорт из assets
+            val json = withContext(Dispatchers.IO) { readAssetText("client_config.json") }
+
+            // Собираем Content для локального профиля
+            val content = ProfileContent().apply {
+                type = Libbox.ProfileTypeLocal
+                name = "Default"
+                config = json
+                lastUpdated = System.currentTimeMillis()
+            }
+
+            // Импортируем и делаем активным (внутри importProfile мы уже проставим selectedProfile)
+            withContext(Dispatchers.IO) { importProfile(content) }
+        } else {
+            // Если профиль есть, но активный ещё не выбран — выберем первый
+            if (Settings.selectedProfile == -1L) {
+                Settings.selectedProfile = profiles.first().id
+            }
+        }
+
+        // 3) Запрашиваем разрешение VPN и поднимаем сервис
+        withContext(Dispatchers.Main) {
+            startService()  // твой метод, внутри вызовет prepare() и запустит нужный Service
+        }
+    }
+
+
+
+    private fun readAssetText(name: String): String =
+        assets.open(name).bufferedReader().use { it.readText() }
+
+    private fun hasAnyProfiles(): Boolean {
+        val dir = File(filesDir, "configs")
+        val any = dir.exists() && dir.listFiles()?.any { it.isFile && it.extension == "json" } == true
+        return any
+    }
+
 
 }

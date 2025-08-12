@@ -1,0 +1,14 @@
+<!-- res/values/styles.xml -->
+<resources>
+    <!-- Кастомный стиль FAB на базе MaterialComponents -->
+    <style name="MyFabStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="fabCustomSize">200dp</item>     <!-- диаметр круга -->
+        <item name="maxImageSize">100dp</item>      <!-- иконка внутри -->
+        <item name="useCompatPadding">false</item>
+        <item name="elevation">8dp</item>
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="rippleColor">?attr/colorPrimaryContainer</item>
+    </style>
+
+
+</resources>

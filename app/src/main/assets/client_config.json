@@ -1,17 +1,35 @@
 {
-  "log": { "level": "info" },
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
   "dns": {
     "servers": [
-      { "type": "https", "server": "https://dns.quad9.net/dns-query" }
-    ]
+      {
+        "type": "https",
+        "tag": "dns-remote",
+        "detour": "proxy",
+        "server": "1.1.1.1"
+      },
+      {
+        "type": "local",
+        "tag": "dns-local",
+        "detour": "direct"
+      }
+    ],
+    "final": "dns-remote",
+    "strategy": "prefer_ipv4"
   },
   "inbounds": [
     {
       "type": "tun",
+      "tag": "tun-in",
       "interface_name": "tun0",
-      "stack": "system",
       "auto_route": true,
-      "sniff": true
+      "strict_route": true,
+      "stack": "system",
+      "sniff": true,
+      "inet4_address": "172.19.0.1/30"
     }
   ],
   "outbounds": [
@@ -25,17 +43,47 @@
       "tls": {
         "enabled": true,
         "server_name": "www.microsoft.com",
-        "utls": { "enabled": true, "fingerprint": "chrome" },
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
         "reality": {
           "enabled": true,
           "public_key": "Go9rITir2urxTAtj-7gCuRfePrv6quO02rQrZkZOjj0",
           "short_id": "c1d8b03cdb043bd9"
         }
-      }
+      },
+      "packet_encoding": "xudp"
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    },
+    {
+      "type": "dns",
+      "tag": "dns"
     }
   ],
   "route": {
-    "auto_detect_interface": true,
-    "final": "proxy"
+    "rules": [
+      {
+        "protocol": "dns",
+        "outbound": "dns"
+      },
+      {
+        "ip_cidr": "78.47.248.121/32",
+        "outbound": "direct"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      }
+    ],
+    "final": "proxy",
+    "auto_detect_interface": true
   }
 }

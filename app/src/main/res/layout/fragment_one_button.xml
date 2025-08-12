@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:gravity="center"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/txtStatus"
+        android:text="Не подключено"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- Большая круглая кнопка -->
+    <Button
+        android:id="@+id/btnToggle"
+        android:text="Подключить VPN"
+        android:textAllCaps="false"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-medium"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:stateListAnimator="@null"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:background="@drawable/btn_big_round"/>
+</LinearLayout>
