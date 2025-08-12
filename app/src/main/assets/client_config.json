@@ -1,0 +1,41 @@
+{
+  "log": { "level": "info" },
+  "dns": {
+    "servers": [
+      { "type": "https", "server": "https://dns.quad9.net/dns-query" }
+    ]
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "interface_name": "tun0",
+      "stack": "system",
+      "auto_route": true,
+      "sniff": true
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "proxy",
+      "server": "78.47.248.121",
+      "server_port": 443,
+      "uuid": "baaabd52-b08f-4da9-ae0a-6634a19ebbbb",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.microsoft.com",
+        "utls": { "enabled": true, "fingerprint": "chrome" },
+        "reality": {
+          "enabled": true,
+          "public_key": "Go9rITir2urxTAtj-7gCuRfePrv6quO02rQrZkZOjj0",
+          "short_id": "c1d8b03cdb043bd9"
+        }
+      }
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "final": "proxy"
+  }
+}

@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace "com.Valarium.Net"
+    namespace "io.nekohasekai.sfa"
     compileSdk 36
 
     ndkVersion "28.0.13004108"
@@ -26,7 +26,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.Valarium.Net"
+        applicationId "com.valariumnet"
         minSdk 21
         targetSdk 35
         versionCode getVersionProps("VERSION_CODE").toInteger()
